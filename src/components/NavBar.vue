@@ -7,8 +7,12 @@
           developed by Li
         </div>
         <div class="my-button">
+          <router-link :to="{name: 'user_login'}">
             <button type="button" class="btn btn-lg btn-primary-outline">登录</button>
+          </router-link>
+          <router-link :to="{name: 'user_register'}">
             <button type="button" class="btn btn-lg btn-primary-outline">注册</button>
+          </router-link>
         </div>
       </div>
     </div>
