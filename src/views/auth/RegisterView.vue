@@ -39,6 +39,9 @@
 
 <script>
 import { ref } from 'vue'
+import $ from 'jquery';
+import router from "@/router"
+
   export default {
     setup() {
       let username = ref("");
@@ -47,7 +50,31 @@ import { ref } from 'vue'
       let error_message = ref("");
 
       const register = () => {
-        console.log(username.value, password.value, password_confirm.value, error_message.value)
+        // console.log(username.value, password.value, password_confirm.value, error_message.value)
+        $.ajax({
+          url: "http://127.0.0.1:8000/auth/register/",
+          type: "POST",
+          data: {
+            "username": username.value,
+            "password": password.value,
+            "password_confirm": password_confirm.value,
+            "error_message": error_message.value
+          },
+          success(resp) {
+            if (resp['message'] === "register successfully!") {
+              error_message.value = ""
+              console.log('注册成功！')
+              router.push({name: "index"})
+
+            } else{
+              error_message.value = resp['message']
+              console.log('注册失败！')
+            }
+          },
+          error(resp) {
+            console.log(resp)
+          }
+        })
       }
 
       return {
