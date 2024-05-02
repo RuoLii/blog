@@ -64,7 +64,7 @@ import router from "@/router"
             if (resp['message'] === "register successfully!") {
               error_message.value = ""
               console.log('注册成功！')
-              router.push({name: "index"})
+              router.push({name: "user_login"})
 
             } else{
               error_message.value = resp['message']
