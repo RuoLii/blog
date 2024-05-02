@@ -23,6 +23,9 @@ export default {
             state.description = resp.description;
             state.is_login = true;
         },
+        update_state_avatar(state, avatar_url) {
+            state.avatar_url = avatar_url;
+        },
         logout(state) {
             state.id = "";
             state.username = "";
@@ -79,6 +82,28 @@ export default {
         logout(ctx) {
             localStorage.removeItem("jwt_token");
             ctx.commit("logout");
+        },
+
+        updateAvatar(ctx, data) {
+            $.ajax({
+                url: "http://127.0.0.1:8000/auth/updateAvatar/",
+                type: "POST",
+                headers: {
+                    Authorization: "TOKEN " + ctx.state.token,
+                },
+                data: data.formData,
+                processData: false,
+                contentType: false,
+                success(resp) {
+                    if (resp.state === "success") {
+                        ctx.commit("update_state_avatar", resp.avatar_url);
+                        data.success(resp.avatar_url);
+                    }
+                },
+                error() {
+                    data.error();
+                }
+            })
         }
 
     },
