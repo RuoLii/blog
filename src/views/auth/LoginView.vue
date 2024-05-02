@@ -6,19 +6,19 @@
         <div class="card" style="border-radius: 20px;">
             <div class="card-body p-5">
               <h2 class="text-center mb-5">登录</h2>
-              <form>
+              <form @submit.prevent="login">
                 <div class="form-outline mb-4">
                   <label class="form-label" for="username">用户名</label>
-                  <input type="text" id="username" class="form-control form-control-lg">
+                  <input v-model="username" type="text" id="username" class="form-control form-control-lg">
                 </div>
                 <div class="form-outline mb-4">
                   <label class="form-label" for="username">密码</label>
-                  <input type="password" id="password" class="form-control form-control-lg">
+                  <input v-model="password" type="password" id="password" class="form-control form-control-lg">
                 </div>
                 <div class="d-flex justify-content-center">
                   <button type="submit" class="btn btn-lg btn-success btn-block gradient-2">登录</button>
                 </div>
-                <div class="error_message">错误信息</div>
+                <div class="error_message">{{ error_message }}</div>
                 <p class="text-center text-muted mt-3">还没有账号？ 
                   <router-link :to="{name: 'user_register'}">
                     <u>去注册</u>
@@ -34,7 +34,44 @@
 </template>
 
 <script>
+import { ref } from 'vue'
+import { useStore } from 'vuex'
+import router from "@/router";
 
+export default {
+  setup() {
+    let store = useStore();
+    let username = ref("")
+    let password = ref("")
+    let error_message = ref("")
+
+    const login = () => {
+      store.dispatch('login', {
+        username: username.value,
+        password: password.value,
+        success() {
+          store.dispatch("getMember", {
+            success() {
+              router.push({name: "index"})
+            },
+            error() {
+            }
+          })
+        },
+        error() {
+          error_message.value = "用户名或密码错误"
+        }
+      });
+    }
+
+    return {
+      username,
+      password,
+      error_message,
+      login,
+    }
+  }
+}
 </script>
 
 <style>
