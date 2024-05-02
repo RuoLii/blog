@@ -20,7 +20,10 @@
           A Blog with Markdown
           Welcome! {{ username }}
         </div>
-        <img :src="avatar_url" alt="" class="profile_avatar">
+        <label for="avatar">
+          <input @change="update_avatar" accept="image/png, image/jpeg, image/jpg" type="file" id="avatar" name="avatar" style="display: none;">
+          <img :src="avatar_url" alt="" class="profile_avatar">
+        </label>
         <div class="my-button">
           <router-link :to="{name: 'index'}">
             <button type="button" class="btn btn-lg btn-primary-outline center" @click="logout">登出</button>
@@ -39,16 +42,45 @@ export default {
     let store = useStore();
     let username = ref(store.state.user.username);
     let avatar_url = ref(store.state.user.avatar);
+    let photo = ref(new Map());
+    let formData = new FormData();
+
     console.log(store.state.user.is_login);
 
     const logout = () => {
       store.dispatch("logout");
     }
 
+    const update_avatar = e => {
+      photo.value.clear();
+      for (let avatar of e.target.files) {
+        formData.append("avatar", avatar);
+        let reader = new FileReader();
+        reader.readAsDataURL(avatar);
+
+        reader.onload = () => {
+          let url = URL.createObjectURL(avatar);
+          photo.value.set(avatar.name, url);
+        }
+      }
+
+      store.dispatch("updateAvatar", {
+        formData: formData,
+        success(resp) {
+          avatar_url.value = resp
+          console.log('更新头像成功！')
+        },
+        error() {
+          console.log('更新失败！')
+        }
+      })
+    }
+
     return {
       logout,
       username,
       avatar_url,
+      update_avatar,
     }
   }
 }
@@ -96,7 +128,6 @@ export default {
   }
 
   .profile_avatar {
-    width: 10vw;
     height: 20vh;
     border-radius: 50%;
     transform: translate(-10%, -6%);
