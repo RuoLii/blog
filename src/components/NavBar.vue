@@ -1,12 +1,12 @@
 <template>
   <div class="wrapper">
     <div class="container d-flex justify-content-center">
-      <div class="title">
+      <div class="title" v-if="!$store.state.user.is_login">
         <div class="title-info">
           A Blog with Markdown
           developed by Li
         </div>
-        <div class="my-button" v-if="!$store.state.user.is_login">
+        <div class="my-button">
           <router-link :to="{name: 'user_login'}">
             <button type="button" class="btn btn-lg btn-primary-outline">登录</button>
           </router-link>
@@ -14,9 +14,16 @@
             <button type="button" class="btn btn-lg btn-primary-outline">注册</button>
           </router-link>
         </div>
-        <div class="my-button" v-else>
+      </div>
+      <div class="title" v-else>
+        <div class="title-info">
+          A Blog with Markdown
+          Welcome! {{ username }}
+        </div>
+        <img :src="avatar_url" alt="" class="profile_avatar">
+        <div class="my-button">
           <router-link :to="{name: 'index'}">
-            <button type="button" class="btn btn-lg btn-primary-outline" @click="logout">登出</button>
+            <button type="button" class="btn btn-lg btn-primary-outline center" @click="logout">登出</button>
           </router-link>
         </div>
       </div>
@@ -25,10 +32,13 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import { useStore } from 'vuex'
 export default {
   setup() {
     let store = useStore();
+    let username = ref(store.state.user.username);
+    let avatar_url = ref(store.state.user.avatar);
     console.log(store.state.user.is_login);
 
     const logout = () => {
@@ -37,6 +47,8 @@ export default {
 
     return {
       logout,
+      username,
+      avatar_url,
     }
   }
 }
@@ -59,7 +71,7 @@ export default {
 
   .my-button {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
   }
   .my-button button {
     margin-right: 30px;
@@ -81,5 +93,12 @@ export default {
     color: white;
     border-color: #290fe1;
     transition-duration: 200ms;
+  }
+
+  .profile_avatar {
+    width: 10vw;
+    height: 20vh;
+    border-radius: 50%;
+    transform: translate(-10%, -6%);
   }
 </style>

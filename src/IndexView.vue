@@ -1,5 +1,7 @@
 <template>
-  <NavBar/>
+  <div v-if="showNavBar">
+    <NavBar/>
+  </div>
   <div v-if="!store.state.user.is_login">
     <MdEditor class="blur-effect"  :toolbars="[]" :disabled="true"/>
     <p class="text-overlay">登录后才能使用编辑器</p>
@@ -11,6 +13,7 @@
 
 <script>
 import { useStore } from 'vuex'
+import { ref } from 'vue'
 import {defineComponent} from "vue";
 import NavBar from "@/components/NavBar.vue";
 import MdEditor from "@/components/MdEditor.vue"
@@ -22,12 +25,14 @@ export default defineComponent({
   },
   setup() {
     let store = useStore();
+    let showNavBar = ref(false);
     //  持久登录
     let jwt_token = localStorage.getItem("jwt_token");
     if (jwt_token) {
       store.commit("updateToken", jwt_token);
       store.dispatch("getMember", {
         success() {
+          showNavBar.value = true;
           router.push({name: "index"});
         },
         error() {
@@ -37,6 +42,7 @@ export default defineComponent({
     }
     return {
       store,
+      showNavBar,
     }
   }
 })
