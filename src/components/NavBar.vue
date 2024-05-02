@@ -6,12 +6,17 @@
           A Blog with Markdown
           developed by Li
         </div>
-        <div class="my-button">
+        <div class="my-button" v-if="!$store.state.user.is_login">
           <router-link :to="{name: 'user_login'}">
             <button type="button" class="btn btn-lg btn-primary-outline">登录</button>
           </router-link>
           <router-link :to="{name: 'user_register'}">
             <button type="button" class="btn btn-lg btn-primary-outline">注册</button>
+          </router-link>
+        </div>
+        <div class="my-button" v-else>
+          <router-link :to="{name: 'index'}">
+            <button type="button" class="btn btn-lg btn-primary-outline" @click="logout">登出</button>
           </router-link>
         </div>
       </div>
@@ -20,7 +25,21 @@
 </template>
 
 <script>
+import { useStore } from 'vuex'
+export default {
+  setup() {
+    let store = useStore();
+    console.log(store.state.user.is_login);
 
+    const logout = () => {
+      store.dispatch("logout");
+    }
+
+    return {
+      logout,
+    }
+  }
+}
 </script>
 
 <style>

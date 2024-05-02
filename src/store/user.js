@@ -22,6 +22,14 @@ export default {
             state.avatar = resp.avatar;
             state.description = resp.description;
             state.is_login = true;
+        },
+        logout(state) {
+            state.id = "";
+            state.username = "";
+            state.avatar = "";
+            state.description = "";
+            state.is_login = false;
+            state.token = "";
         }
     },
     actions: {
@@ -34,9 +42,13 @@ export default {
                     "password": data.password,
                 },
                 success(resp) {
-                    localStorage.setItem("litoken", resp.litoken)
-                    ctx.commit("updateToken", resp.litoken);
-                    data.success();
+                    if (resp.state === "success") {
+                        localStorage.setItem("jwt_token", resp.jwt_token)
+                        ctx.commit("updateToken", resp.jwt_token);
+                        data.success();
+                    } else {
+                        data.error();
+                    }
                 },
                 error() {
                     data.error();
@@ -62,6 +74,11 @@ export default {
                     data.error();
                 }
             })
+        },
+
+        logout(ctx) {
+            localStorage.removeItem("jwt_token");
+            ctx.commit("logout");
         }
 
     },
